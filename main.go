@@ -339,7 +339,7 @@ func RRSchedule(w io.Writer, title string, processes []Process) {
 		currentProcessNum int64
 		currentBurstTime  int64
 		//lastBurstTime      int64
-		TIMESLICE = int64(4)
+		TIMEQUANTUM = int64(3)
 	)
 
 	for i := range processes {
@@ -353,7 +353,7 @@ func RRSchedule(w io.Writer, title string, processes []Process) {
 		lastProcessNum := currentProcessNum // set last process before current process gets updated to a new process
 
 		// switch processes if time is up or if the process finished
-		if currentBurstTime == TIMESLICE || newBurstTimes[currentProcessNum] == 0 {
+		if currentBurstTime == TIMEQUANTUM || newBurstTimes[currentProcessNum] == 0 {
 			currentProcessNum += 1                          // increments process number to move to next process
 			if currentProcessNum >= int64(len(processes)) { // checks to see if the number for the current process is larger than num processes
 				currentProcessNum = 0 // sets number to 0 to go back to start, makes it so its like a circular queue without actually making one
@@ -378,7 +378,7 @@ func RRSchedule(w io.Writer, title string, processes []Process) {
 		if newBurstTimes[lastProcessNum] != 0 && lastProcessNum != currentProcessNum {
 			//start := serviceTime - (processes[lastProcessNum].BurstDuration - newBurstTimes[lastProcessNum])
 			//start := serviceTime - lastBurstTime
-			start := serviceTime - TIMESLICE
+			start := serviceTime - TIMEQUANTUM
 
 			gantt = append(gantt, TimeSlice{
 				PID:   processes[lastProcessNum].ProcessID,
